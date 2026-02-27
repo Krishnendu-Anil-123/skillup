@@ -339,18 +339,44 @@ const OfferPage = ({ user }: { user: User }) => {
 const ExplorePage = () => {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [filter, setFilter] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchOffers = async () => {
-      const { data } = await supabase
-        .from('offers')
-        .select('*, users(username)');
-      if (data) setOffers(data);
+      try {
+        setLoading(true);
+        const { data, error: fetchError } = await supabase
+          .from('offers')
+          .select('*');
+        
+        if (fetchError) {
+          console.error('Error fetching offers:', fetchError);
+          setError(fetchError.message);
+        } else if (data) {
+          setOffers(data);
+          setError('');
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError('Failed to load offers');
+      } finally {
+        setLoading(false);
+      }
     };
     fetchOffers();
   }, []);
 
   const filteredOffers = filter === 'All' ? offers : offers.filter(o => o.category === filter);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 pt-32 pb-20">
+        <h2 className="text-4xl font-black mb-8">EXPLORE SKILLS</h2>
+        <p className="text-zinc-600">Loading offers...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-32 pb-20">
@@ -375,35 +401,47 @@ const ExplorePage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredOffers.map(offer => (
-          <motion.div 
-            layout
-            key={offer.id} 
-            className="brutal-card p-6 bg-white flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-[10px] font-black uppercase px-2 py-1 bg-zinc-100 border border-zinc-900">
-                  {offer.category}
-                </span>
-                <span className="font-black text-emerald-600">{offer.credits} CR</span>
-              </div>
-              <h3 className="text-xl font-black mb-2">{offer.skill_name}</h3>
-              <p className="text-zinc-600 text-sm mb-4 line-clamp-3">{offer.description}</p>
-            </div>
-            <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-zinc-200 border border-zinc-900 flex items-center justify-center font-black text-xs">
-                  {offer.username[0].toUpperCase()}
+      {error && (
+        <div className="brutal-card p-4 bg-red-100 text-red-800 mb-8">
+          <p className="font-bold">Error: {error}</p>
+        </div>
+      )}
+
+      {filteredOffers.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-zinc-600 text-lg">No offers found. Be the first to share your skills!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {filteredOffers.map(offer => (
+            <motion.div 
+              layout
+              key={offer.id} 
+              className="brutal-card p-6 bg-white flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-[10px] font-black uppercase px-2 py-1 bg-zinc-100 border border-zinc-900">
+                    {offer.category}
+                  </span>
+                  <span className="font-black text-emerald-600">{offer.credits} CR</span>
                 </div>
-                <span className="text-xs font-bold">{offer.username}</span>
+                <h3 className="text-xl font-black mb-2">{offer.skill_name}</h3>
+                <p className="text-zinc-600 text-sm mb-4 line-clamp-3">{offer.description}</p>
               </div>
-              <button className="text-xs font-black underline hover:no-underline">BOOK SESSION</button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-zinc-200 border border-zinc-900 flex items-center justify-center font-black text-xs">
+                    ?
+                  </div>
+                  <span className="text-xs font-bold">Mentor</span>
+                </div>
+                <button className="text-xs font-black underline hover:no-underline">BOOK SESSION</button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
