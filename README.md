@@ -165,10 +165,11 @@ opening after login
 ![Screenshot3]
 
 <img width="1851" height="1060" alt="Screenshot 2026-02-28 094318" src="https://github.com/user-attachments/assets/7c385ddc-58fe-4dcf-8c38-5c0f38c4a502" />
+i offer
 
 <img width="1902" height="1055" alt="Screenshot 2026-02-28 094302" src="https://github.com/user-attachments/assets/77a27b56-51fc-4d10-8723-a95eb95b77c3" />
+i explore
 
-i offer and i explore
 #### Diagrams
 
 **System Architecture:**
@@ -177,9 +178,8 @@ i offer and i explore
 
 
 **Application Workflow:**
+![archi](https://github.com/user-attachments/assets/0994247c-4f2c-4804-9719-fe8467f0f7bc)
 
-![Workflow](docs/workflow.png)
-*Add caption explaining your workflow*
 
 ---
 
@@ -218,7 +218,7 @@ i offer and i explore
 
 #### API Documentation
 
-**Base URL:** `https://api.yourproject.com`
+**Base URL:** `skillup-lilac.vercel.app`
 
 ##### Endpoints
 
